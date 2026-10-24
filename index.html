@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sociales: Los Nahuas-Pipiles</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Arial,sans-serif;background:linear-gradient(160deg,#fff6d6,#d9f2ff);color:#1f2a44;min-height:100vh}
+.wrap{max-width:760px;margin:0 auto;padding:16px}h1{text-align:center;font-size:2rem;margin:10px 0}h2{font-size:1.5rem;margin:8px 0}
+.card{background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 18px rgba(0,0,0,.1);margin:14px 0}
+.btn{display:block;width:100%;font-size:1.3rem;padding:16px;margin:8px 0;border:0;border-radius:16px;cursor:pointer;color:#fff;background:#2b8de2;font-weight:700}
+.btn.g{background:#22a35a}.btn.o{background:#f08a24}.btn.r{background:#c7362b}.btn.gray{background:#8a94a8}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row .btn{flex:1;min-width:140px}
+.topics label{display:block;font-size:1.25rem;padding:10px;background:#e8f3ff;border-radius:12px;margin:6px 0;cursor:pointer}
+.topics input{transform:scale(1.5);margin-right:12px}
+.q{font-size:1.45rem;font-weight:700;margin:6px 0 14px}.opt{background:#eef1f6;color:#1f2a44;text-align:left}
+.opt.ok{background:#22a35a;color:#fff}.opt.bad{background:#c7362b;color:#fff}
+.exp{font-size:1.15rem;background:#fff6d6;border-left:6px solid #ffbf00;padding:12px;border-radius:10px;margin-top:10px}
+.stats{display:flex;justify-content:space-between;font-size:1.15rem;font-weight:700;flex-wrap:wrap;gap:8px}
+.tag{display:inline-block;padding:4px 10px;border-radius:10px;background:#ffd9cc;font-size:.95rem;font-weight:700}
+.fc{min-height:200px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.4rem;cursor:pointer;background:#e8f3ff}
+.timer{font-size:2rem;text-align:center;font-weight:800;color:#c7362b}.hid{display:none}.msg{font-size:1.3rem;text-align:center;font-weight:700;min-height:1.6em}
+ul{font-size:1.1rem}li{margin:6px 0}
+</style></head><body><div class="wrap">
+<h1>🌽 Sociales: Los Nahuas-Pipiles</h1>
+<div id="home" class="card">
+<p style="font-size:1.2rem;text-align:center">¡Hola, amiguito! ¡Aprende sobre los nahuas-pipiles jugando!</p>
+<button class="btn g" onclick="showStudy()">📖 Estudiar</button>
+<div class="topics" id="topics">
+<label><input type="checkbox" value="ori" checked>🗺️ Origen y llegada</label>
+<label><input type="checkbox" value="vid" checked>🌽 Vida y sociedad</label>
+<label><input type="checkbox" value="con" checked>🛡️ Conquista y legado</label>
+</div>
+<div class="row"><button class="btn" onclick="startPractice()">✏️ Practicar</button><button class="btn o" onclick="startChallenge()">⏱️ Desafío 60 s</button></div>
+<p style="text-align:center;font-size:1.1rem">🏆 Récord del desafío: <b id="best">0</b></p>
+</div>
+<div id="study" class="card hid">
+<h2 id="stTitle"></h2><div class="row" id="stTabs"></div>
+<div id="fc" class="card fc" onclick="flip()"></div>
+<p style="text-align:center">Toca la tarjeta para ver la respuesta</p>
+<div class="row"><button class="btn gray" onclick="moveFc(-1)">⬅️ Anterior</button><button class="btn" onclick="moveFc(1)">Siguiente ➡️</button></div>
+<button class="btn r" onclick="home()">🏠 Inicio</button>
+</div>
+<div id="play" class="card hid">
+<div class="stats"><span>✅ <span id="sc">0</span></span><span>🔥 Racha: <span id="st">0</span></span><span id="cnt"></span></div>
+<div id="tm" class="timer hid"></div>
+<p><span class="tag" id="tg"></span></p>
+<div class="q" id="qt"></div><div id="opts"></div>
+<div id="msg" class="msg"></div><div id="exp" class="exp hid"></div>
+<button class="btn g hid" id="nx" onclick="next()">Siguiente ➡️</button>
+<button class="btn r" onclick="finish()">Terminar</button>
+</div>
+<div id="sum" class="card hid"><h2 id="sumT"></h2><p id="sumP" style="font-size:1.2rem"></p><div id="sumL"></div>
+<button class="btn o hid" id="rep" onclick="repeatErrors()">🔁 Repasar errores</button>
+<button class="btn" onclick="home()">🏠 Inicio</button></div>
+</div>
+<script>
+const TN={ori:"Origen y llegada",vid:"Vida y sociedad",con:"Conquista y legado"};
+// t: m=opción múltiple, v=verdadero/falso
+const Q=[
+{c:"ori",t:"m",q:"¿De dónde venían los nahuas que llegaron a El Salvador?",o:["Del centro de México","De América del Sur","De España","De las islas del Caribe"],e:"Los nahuas-pipiles migraron desde el centro de México hacia Centroamérica."},
+{c:"ori",t:"m",q:"¿Con qué pueblo antiguo de México se relaciona a los pipiles?",o:["Los toltecas","Los incas","Los vikingos","Los romanos"],e:"Los pipiles están emparentados con los toltecas y otros pueblos nahuas de México."},
+{c:"ori",t:"m",q:"¿Qué idioma hablaban los pipiles?",o:["Náhuat","Inglés","Maya quiché","Latín"],e:"Hablaban náhuat, una lengua de la familia nahua, parecida al náhuatl de los aztecas."},
+{c:"ori",t:"v",q:"Los pipiles también son conocidos como «nahuas».",a:true,e:"¡Cierto! Pertenecen al grupo de pueblos nahuas."},
+{c:"ori",t:"m",q:"¿Qué otro nombre se les daba, que significa «emigrantes» o «los que se fueron»?",o:["Yaquis","Incas","Lencas","Olmecas"],e:"Se les llamó yaquis porque llegaron migrando desde otro lugar."},
+{c:"ori",t:"m",q:"¿Qué significa la palabra «pipil»?",o:["Niño o muchacho (también se interpreta como «noble»)","Montaña grande","Agua de lluvia","Guerrero de piedra"],e:"«Pipil» viene del náhuat y se suele traducir como «niño» o «muchacho»; algunos libros dicen «noble» o «príncipe»."},
+{c:"ori",t:"m",q:"¿Aproximadamente en qué siglo llegaron los pipiles a El Salvador, según la tradición?",o:["Siglo XI","Siglo XX","Siglo I antes de Cristo","Siglo XIX"],e:"Según la tradición, la migración principal llegó alrededor del siglo XI (hace unos mil años)."},
+{c:"ori",t:"m",q:"Según la tradición, ¿quién guió a los pipiles en su llegada?",o:["Topiltzin Acxitl","Pedro de Alvarado","Cristóbal Colón","Atlácatl"],e:"Según la tradición, Topiltzin Acxitl guió a su pueblo hasta Cuzcatlán."},
+{c:"ori",t:"v",q:"Los pipiles llegaron a El Salvador en barcos desde Europa.",a:false,e:"Falso. Llegaron caminando desde México, en varias oleadas de migración."},
+{c:"ori",t:"m",q:"¿En qué parte de El Salvador se establecieron principalmente los pipiles?",o:["En el centro y el occidente","Solo en el oriente","En las islas del golfo de Fonseca","En ningún lugar fijo"],e:"Vivieron sobre todo en el centro y occidente; en el oriente vivían los lencas."},
+{c:"ori",t:"m",q:"¿Cómo se llamaba el principal señorío de los pipiles?",o:["Señorío de Cuzcatlán","Imperio Inca","Reino de Castilla","Señorío de Tikal"],e:"El Señorío de Cuzcatlán era el territorio más importante de los pipiles."},
+{c:"ori",t:"m",q:"¿Qué significa «Cuzcatlán»?",o:["Lugar de joyas o collares","Lugar de volcanes","Río grande","Tierra fría"],e:"Cuzcatlán significa «lugar de joyas o collares» (tierra de cosas preciosas)."},
+{c:"ori",t:"m",q:"¿Qué pueblo vivía en el oriente de El Salvador, al otro lado del río Lempa?",o:["Los lencas","Los pipiles","Los aztecas","Los incas"],e:"Los lencas vivían en el oriente; los pipiles, en el centro y occidente."},
+{c:"ori",t:"v",q:"Los pipiles formaban parte de Mesoamérica.",a:true,e:"¡Cierto! Mesoamérica va desde el centro de México hasta parte de Centroamérica."},
+{c:"ori",t:"m",q:"¿Cerca de qué ciudad actual estaba la capital de Cuzcatlán?",o:["Antiguo Cuscatlán / San Salvador","San Miguel","La Unión","Ciudad de México"],e:"La capital de Cuzcatlán estaba en la zona de la actual San Salvador y Antiguo Cuscatlán."},
+{c:"ori",t:"m",q:"Además de Cuzcatlán, ¿qué otro señorío pipil importante existía en el occidente?",o:["Izalco","Roma","Cusco","Tenochtitlan"],e:"Izalco era otro importante señorío pipil, famoso por su cacao."},
+{c:"ori",t:"v",q:"Todos los pipiles llegaron en un solo grupo y en un mismo día.",a:false,e:"Falso. Llegaron en varias oleadas o grupos a lo largo del tiempo."},
+{c:"vid",t:"m",q:"¿Cuál era el alimento más importante de los pipiles?",o:["El maíz","El trigo","El arroz","La papa"],e:"El maíz era la base de su alimentación: tortillas, tamales y atol."},
+{c:"vid",t:"m",q:"¿Qué semilla usaban los pipiles como moneda?",o:["El cacao","El café","El frijol","La semilla de mango"],e:"Las semillas de cacao eran tan valiosas que se usaban para comprar y vender."},
+{c:"vid",t:"m",q:"¿Qué producto de los árboles de la costa también era valioso y aún es famoso en El Salvador?",o:["El bálsamo","El petróleo","El oro negro de minas","La lana"],e:"El bálsamo se obtiene de un árbol de la zona costera; hoy se le llama «Costa del Bálsamo»."},
+{c:"vid",t:"m",q:"¿Qué tinte azul se cultivó mucho en El Salvador, sobre todo en la época colonial?",o:["El añil (xiquilite)","El chocolate","La sal","El tabaco"],e:"El añil da un color azul. Los indígenas ya conocían la planta y en la Colonia se volvió muy importante."},
+{c:"vid",t:"m",q:"Además del maíz, ¿qué otros cultivos sembraban?",o:["Frijol, calabaza (ayote) y chile","Uvas y aceitunas","Trigo y cebada","Manzanas y peras"],e:"Sembraban frijol, ayote, chile, cacao y algodón, entre otros."},
+{c:"vid",t:"m",q:"¿Cómo se llamaba al gobernante o señor principal de los pipiles?",o:["Tatuan (señor)","Rey de España","Presidente","Faraón"],e:"El señor principal se llamaba tatuan (o tecuhtli). Gobernaba con ayuda de los nobles."},
+{c:"vid",t:"m",q:"¿Quiénes eran los macehuales?",o:["La gente común: campesinos y trabajadores","Los sacerdotes","Los reyes","Los soldados españoles"],e:"Los macehuales eran el pueblo común; cultivaban la tierra y pagaban tributo."},
+{c:"vid",t:"m",q:"¿Quiénes dirigían las ceremonias religiosas?",o:["Los sacerdotes","Los macehuales","Los niños","Los comerciantes"],e:"Los sacerdotes dirigían ritos, cuidaban templos y conocían el calendario."},
+{c:"vid",t:"m",q:"¿Qué hacían los comerciantes pipiles?",o:["Intercambiaban productos como cacao y bálsamo con otros pueblos","Gobernaban el señorío","Dirigían las ceremonias","Construían barcos de vapor"],e:"Los comerciantes llevaban productos a otros pueblos y mercados."},
+{c:"vid",t:"v",q:"La sociedad pipil estaba organizada en grupos: señores, nobles, sacerdotes, comerciantes y macehuales.",a:true,e:"¡Cierto! Era una sociedad organizada en clases o grupos sociales."},
+{c:"vid",t:"v",q:"Los pipiles creían en un solo dios.",a:false,e:"Falso. Eran politeístas: creían en varios dioses relacionados con la naturaleza."},
+{c:"vid",t:"m",q:"¿Qué dios era la «serpiente emplumada»?",o:["Quetzalcóatl","Tláloc","Itzcuín","Zeus"],e:"Quetzalcóatl, la serpiente emplumada, era uno de sus dioses más importantes."},
+{c:"vid",t:"m",q:"¿Quién era Tláloc?",o:["El dios de la lluvia","El dios del fuego","El primer rey","Un volcán"],e:"Tláloc era el dios de la lluvia, muy importante para que creciera el maíz."},
+{c:"vid",t:"m",q:"¿Por qué era tan importante el dios de la lluvia para los pipiles?",o:["Porque sin lluvia no crecían las cosechas de maíz","Porque les gustaba nadar","Porque vivían en el desierto","Porque no comían maíz"],e:"Eran agricultores: la lluvia era necesaria para sus siembras."},
+{c:"vid",t:"m",q:"¿Con qué materiales construían sus casas los pipiles comunes?",o:["Bahareque, adobe, madera y techo de paja","Vidrio y acero","Mármol blanco","Bloques de hielo"],e:"Las casas sencillas eran de bahareque o adobe, con techo de paja o palma."},
+{c:"vid",t:"m",q:"¿Qué artesanías hacían los pipiles?",o:["Cerámica, tejidos de algodón y objetos de jade y conchas","Teléfonos y relojes","Autos de madera","Monedas de oro con la cara del rey"],e:"Eran buenos alfareros y tejedores; hacían collares y adornos."},
+{c:"vid",t:"m",q:"¿Qué usaban para moler el maíz?",o:["La piedra de moler","Una licuadora","Un molino de viento","Una computadora"],e:"Molían el maíz en la piedra de moler para hacer masa."},
+{c:"vid",t:"m",q:"¿Con qué material tejían su ropa?",o:["Algodón","Seda china","Plástico","Lana de oveja"],e:"Cultivaban algodón y lo tejían; las ovejas llegaron después con los españoles."},
+{c:"vid",t:"v",q:"Las semillas de cacao también servían para preparar una bebida.",a:true,e:"¡Cierto! Con el cacao preparaban una bebida, antepasada del chocolate."},
+{c:"vid",t:"m",q:"¿Qué bebida de maíz se sigue tomando hoy en El Salvador y viene de la tradición indígena?",o:["El atol","El café con leche","La limonada","El té verde"],e:"El atol de maíz es herencia de los pueblos indígenas."},
+{c:"con",t:"m",q:"¿Qué conquistador español invadió Cuzcatlán?",o:["Pedro de Alvarado","Cristóbal Colón","Hernán Cortés","Francisco Pizarro"],e:"Pedro de Alvarado llegó desde Guatemala para conquistar el territorio pipil."},
+{c:"con",t:"m",q:"¿En qué año llegó Pedro de Alvarado a territorio pipil?",o:["1524","1492","1821","1900"],e:"Pedro de Alvarado entró al territorio pipil en 1524."},
+{c:"con",t:"m",q:"¿Dónde ocurrió una de las primeras batallas entre pipiles y españoles?",o:["En Acajutla","En San Miguel","En Madrid","En Chalatenango"],e:"La batalla de Acajutla (1524) fue uno de los primeros enfrentamientos."},
+{c:"con",t:"v",q:"En la batalla de Acajutla, Pedro de Alvarado resultó herido en una pierna.",a:true,e:"¡Cierto! Fue herido de una flecha en la pierna y quedó cojo."},
+{c:"con",t:"m",q:"¿Qué personaje es recordado por la tradición como un héroe que resistió a los españoles?",o:["Atlácatl","Pedro de Alvarado","Hernán Cortés","Cristóbal Colón"],e:"Según la tradición, Atlácatl dirigió la resistencia de Cuzcatlán."},
+{c:"con",t:"m",q:"¿Qué otro nombre se menciona como líder pipil en la batalla de Acajutla?",o:["Atonal","Topiltzin","Moctezuma","Tecún Umán"],e:"Algunas tradiciones dicen que Atonal fue quien hirió a Alvarado. Los historiadores aún discuten los detalles."},
+{c:"con",t:"v",q:"Los pipiles se rindieron sin luchar ante los españoles.",a:false,e:"Falso. Resistieron con valentía; la conquista tardó varios años."},
+{c:"con",t:"m",q:"¿Qué armas usaban los españoles que los pipiles no conocían?",o:["Armas de fuego, caballos y armaduras de metal","Arcos y flechas","Lanzas de madera","Hondas"],e:"Los caballos, cañones y armaduras de acero dieron ventaja a los españoles."},
+{c:"con",t:"m",q:"¿Cuál de estas palabras que usamos hoy viene del náhuat?",o:["Guajolote / chucho / tecolote","Computadora","Fútbol","Bicicleta"],e:"Muchas palabras salvadoreñas vienen del náhuat: chucho, tecolote, guacal, cipote..."},
+{c:"con",t:"m",q:"¿Cuál de estos municipios tiene nombre de origen náhuat y fuerte herencia pipil?",o:["Nahuizalco","San Francisco","Santa Rosa","La Unión"],e:"Nahuizalco, Izalco y Panchimalco conservan muchas tradiciones pipiles."},
+{c:"con",t:"v",q:"Todavía hay personas en El Salvador que hablan náhuat.",a:true,e:"¡Cierto! Quedan pocos hablantes, sobre todo en Sonsonate, y hay esfuerzos para enseñarlo."},
+{c:"con",t:"m",q:"¿En qué departamento quedan más hablantes de náhuat hoy?",o:["Sonsonate","Morazán","La Unión","Usulután"],e:"En Sonsonate (Santo Domingo de Guzmán, Nahuizalco, Izalco) quedan la mayoría de hablantes."},
+{c:"con",t:"m",q:"¿Qué municipio de San Salvador es famoso por su Festival de las Flores y Palmas, de tradición indígena?",o:["Panchimalco","Santa Tecla","Soyapango","Apopa"],e:"Panchimalco celebra las Flores y Palmas y conserva tradiciones indígenas."},
+{c:"con",t:"m",q:"¿Qué nombre de nuestro país viene del señorío pipil?",o:["Cuscatlán (por eso nos dicen «cuscatlecos»)","Guanacaste","Yucatán","Tikal"],e:"A El Salvador se le llama poéticamente Cuscatlán; hay un departamento con ese nombre."},
+{c:"con",t:"v",q:"La palabra «tamal» viene del náhuat.",a:true,e:"¡Cierto! Viene de «tamal(li)». ¡Comida y palabra son herencia indígena!"},
+{c:"con",t:"m",q:"¿Qué es «Atlácatl» en San Salvador hoy?",o:["Un monumento en honor al héroe indígena","Un centro comercial","Un volcán","Un río"],e:"Hay un monumento a Atlácatl que recuerda la resistencia indígena."}
+];
+const CARDS={
+ori:[["¿Quiénes eran los nahuas-pipiles?","Un pueblo indígena que llegó desde el centro de México y vivió en gran parte de El Salvador."],["Origen","Venían del centro de México y estaban emparentados con los toltecas."],["Nombres","Nahuas, pipiles («niños/muchachos» o «nobles») y yaquis («emigrantes»)."],["Llegada","Según la tradición, llegaron alrededor del siglo XI guiados por Topiltzin Acxitl."],["¿Dónde vivieron?","En el centro y occidente de El Salvador. Los lencas vivían en el oriente."],["Señorío de Cuzcatlán","Su principal territorio. Cuzcatlán = «lugar de joyas o collares»."],["Idioma","El náhuat, parecido al náhuatl de los aztecas."]],
+vid:[["Alimento principal","El maíz: tortillas, tamales y atol. También frijol, ayote y chile."],["El cacao","Sus semillas se usaban como moneda y para hacer una bebida."],["Otros productos","Bálsamo, algodón y, más tarde (en la Colonia), mucho añil."],["Organización social","Señor (tatuan), nobles, sacerdotes, comerciantes y macehuales (pueblo común)."],["Religión","Creían en varios dioses: Quetzalcóatl (serpiente emplumada), Tláloc (lluvia), Itzcuín y otros."],["Casas","De bahareque o adobe con techo de paja o palma."],["Artesanías","Cerámica, tejidos de algodón, collares de jade y conchas."]],
+con:[["La conquista","En 1524 llegó Pedro de Alvarado desde Guatemala."],["Batalla de Acajutla","1524. Los pipiles lucharon con valor; Alvarado fue herido en una pierna."],["Héroes de la tradición","Atlácatl y Atonal son recordados como líderes de la resistencia."],["Palabras náhuat de hoy","Chucho, tecolote, tamal, guacal, cipote, elote, zacate..."],["Lugares con herencia pipil","Izalco, Nahuizalco, Panchimalco, Santo Domingo de Guzmán."],["Náhuat hoy","Aún hay hablantes, sobre todo en Sonsonate, y se enseña en algunas escuelas."]]};
+Q.forEach((q,i)=>q.id=i);
+const $=id=>document.getElementById(id);
+let pool=[],cur=null,score=0,streak=0,done=0,missed={},answered=false,chal=false,timer=null,left=0,weight={},last=-1;
+$("best").textContent=localStorage.getItem("nahuas_best")||0;
+function show(id){["home","study","play","sum"].forEach(x=>$(x).classList.toggle("hid",x!==id))}
+function home(){stop();$("best").textContent=localStorage.getItem("nahuas_best")||0;show("home")}
+function sel(){const s=[...document.querySelectorAll("#topics input:checked")].map(i=>i.value);return s.length?s:["ori","vid","con"]}
+let fcT="ori",fcI=0,fcF=false;
+function showStudy(){$("stTabs").innerHTML=Object.keys(TN).map(k=>`<button class="btn ${k==fcT?'g':'gray'}" onclick="fcT='${k}';fcI=0;showStudy()">${TN[k]}</button>`).join("");$("stTitle").textContent="📖 "+TN[fcT];fcF=false;drawFc();show("study")}
+function drawFc(){const c=CARDS[fcT][fcI];$("fc").innerHTML=fcF?`<div>${c[1]}</div>`:`<b>${c[0]}</b>`}
+function flip(){fcF=!fcF;drawFc()}
+function moveFc(d){const n=CARDS[fcT].length;fcI=(fcI+d+n)%n;fcF=false;drawFc();$("stTitle").textContent=`📖 ${TN[fcT]} (${fcI+1}/${n})`}
+function begin(list,isChal){pool=list;score=0;streak=0;done=0;missed={};weight={};last=-1;chal=isChal;list.forEach(q=>weight[q.id]=1);
+$("sc").textContent=0;$("st").textContent=0;show("play");stop();
+if(chal){left=60;$("tm").classList.remove("hid");$("tm").textContent="⏱️ 60";timer=setInterval(()=>{left--;$("tm").textContent="⏱️ "+left;if(left<=0)finish()},1000)}else $("tm").classList.add("hid");next()}
+function startPractice(){const s=sel();begin(Q.filter(q=>s.includes(q.c)),false)}
+function startChallenge(){const s=sel();begin(Q.filter(q=>s.includes(q.c)),true)}
+function repeatErrors(){begin(Q.filter(q=>missed[q.id]),false)}
+function stop(){if(timer){clearInterval(timer);timer=null}}
+function pick(){let tot=0;const c=pool.filter(q=>q.id!==last||pool.length==1);c.forEach(q=>tot+=weight[q.id]);let r=Math.random()*tot;for(const q of c){r-=weight[q.id];if(r<=0)return q}return c[0]}
+function shuf(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function next(){cur=pick();last=cur.id;answered=false;$("tg").textContent=TN[cur.c]+(cur.t=="v"?" · ¿Verdadero o falso?":"");
+$("qt").textContent=cur.q;$("cnt").textContent="Preguntas: "+done;
+let opts,right;if(cur.t=="m"){opts=shuf(cur.o);right=cur.o[0]}else if(cur.t=="v"){opts=["Verdadero","Falso"];right=cur.a?"Verdadero":"Falso"}else{opts=["Mayas","Pipiles"];right=cur.a}
+cur.right=right;$("opts").innerHTML="";opts.forEach(o=>{const b=document.createElement("button");b.className="btn opt";b.textContent=o;b.onclick=()=>answer(b,o);$("opts").appendChild(b)});
+$("msg").textContent="";$("exp").classList.add("hid");$("nx").classList.add("hid")}
+const GOOD=["¡Muy bien! 🎉","¡Excelente! ⭐","¡Correcto! 👏","¡Eres un crack! 🚀","¡Súper! 💪"];
+function answer(b,o){if(answered)return;answered=true;done++;const ok=o===cur.right;
+[...$("opts").children].forEach(x=>{if(x.textContent===cur.right)x.classList.add("ok")});
+if(ok){score++;streak++;weight[cur.id]=Math.max(1,weight[cur.id]-1);$("msg").textContent=GOOD[Math.floor(Math.random()*GOOD.length)]+(streak>=3?` ¡Racha de ${streak}! 🔥`:"")}
+else{b.classList.add("bad");streak=0;missed[cur.id]=1;weight[cur.id]+=3;$("msg").textContent="¡Casi! Mira la respuesta correcta 💡"}
+$("sc").textContent=score;$("st").textContent=streak;$("cnt").textContent="Preguntas: "+done;
+if(chal){setTimeout(()=>{if(chal&&left>0)next()},ok?600:1600);return}
+$("exp").textContent="ℹ️ "+cur.e;$("exp").classList.remove("hid");$("nx").classList.remove("hid")}
+function finish(){stop();const wasChal=chal;chal=false;let t="¡Buen trabajo, amiguito! 🌟";
+if(wasChal){const best=+(localStorage.getItem("nahuas_best")||0);if(score>best){localStorage.setItem("nahuas_best",score);t="🏆 ¡Nuevo récord: "+score+"!"}}
+$("sumT").textContent=t;$("sumP").textContent=`Respondiste bien ${score} de ${done} preguntas.`;
+const m=Q.filter(q=>missed[q.id]);$("sumL").innerHTML=m.length?"<h3>Para repasar:</h3><ul>"+m.map(q=>`<li><b>${q.q}</b><br>✔️ ${q.t=="m"?q.o[0]:q.t=="v"?(q.a?"Verdadero":"Falso"):q.a} — ${q.e}</li>`).join("")+"</ul>":"<p>¡No tuviste errores! 🎉</p>";
+$("rep").classList.toggle("hid",!m.length);show("sum")}
+</script></body></html>
